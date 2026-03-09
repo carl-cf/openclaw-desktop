@@ -1,30 +1,7 @@
 import Store from 'electron-store';
 
-interface AppConfig {
-  model: {
-    provider: string;
-    apiKey: string;
-    model: string;
-  };
-  channels: {
-    feishu: { enabled: boolean; appId?: string; appSecret?: string };
-    telegram: { enabled: boolean; botToken?: string };
-    whatsapp: { enabled: boolean; phoneNumber?: string };
-  };
-  advanced: {
-    port: number;
-    logLevel: 'debug' | 'info' | 'warn' | 'error';
-    autoStart: boolean;
-  };
-}
-
-interface ValidationResult {
-  ok: boolean;
-  error?: string;
-}
-
 export class ConfigManager {
-  private store: Store<AppConfig>;
+  private store: any;
 
   constructor() {
     this.store = new Store({
@@ -50,19 +27,19 @@ export class ConfigManager {
     });
   }
 
-  get(key: keyof AppConfig): any {
+  get(key: string): any {
     return this.store.get(key);
   }
 
-  set(key: keyof AppConfig, value: any): void {
+  set(key: string, value: any): void {
     this.store.set(key, value);
   }
 
-  getAll(): AppConfig {
+  getAll(): any {
     return this.store.store;
   }
 
-  validate(): ValidationResult {
+  validate(): { ok: boolean; error?: string } {
     const model = this.store.get('model');
     
     if (!model.apiKey || model.apiKey.trim() === '') {
@@ -73,23 +50,11 @@ export class ConfigManager {
       return { ok: false, error: '模型提供商未选择' };
     }
 
-    // 验证渠道配置
-    const channels = this.store.get('channels');
-    const enabledChannels = Object.values(channels).filter(c => c.enabled);
-    
-    if (enabledChannels.length === 0) {
-      return { 
-        ok: false, 
-        error: '至少需要启用一个通信渠道（飞书/Telegram/WhatsApp）' 
-      };
-    }
-
     return { ok: true };
   }
 
   export(): string {
     const config = this.store.store;
-    // 导出时隐藏 API Key
     const safeConfig = {
       ...config,
       model: {
