@@ -1,0 +1,11 @@
+node_modules/
+dist/
+releases/
+*.log
+.DS_Store
+Thumbs.db
+*.pem
+*.key
+.env
+.env.local
+*.tgz
