@@ -121,13 +121,13 @@ function initIPC() {
   });
 
   // 获取配置
-  ipcMain.handle('config:get', async (_, key: string) => {
-    return configManager?.get(key);
+  ipcMain.handle('config:get', async (_, key: keyof any) => {
+    return configManager?.get(key as string);
   });
 
   // 保存配置
-  ipcMain.handle('config:set', async (_, key: string, value: any) => {
-    configManager?.set(key, value);
+  ipcMain.handle('config:set', async (_, key: keyof any, value: any) => {
+    configManager?.set(key as string, value);
     return { success: true };
   });
 

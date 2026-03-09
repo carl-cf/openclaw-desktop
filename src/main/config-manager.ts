@@ -2,7 +2,7 @@ import Store from 'electron-store';
 
 interface AppConfig {
   model: {
-    provider: 'bailian' | 'siliconflow' | 'openai' | 'custom';
+    provider: string;
     apiKey: string;
     model: string;
   };

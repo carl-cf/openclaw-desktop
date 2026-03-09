@@ -1,17 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Button,
-  Card,
-  Space,
-  Typography,
-  Tag,
-  Progress,
-  Divider,
-  message,
-  Spin,
-} from 'antd';
+import { Button, Card, Space, Typography, Tag, message } from 'antd';
 
-const { Title, Paragraph, Text } = Typography;
+const { Title, Text } = Typography;
 
 const Dashboard: React.FC = () => {
   const [gatewayRunning, setGatewayRunning] = useState(false);
@@ -28,7 +18,6 @@ const Dashboard: React.FC = () => {
     checkGatewayStatus();
     loadLogs();
     
-    // 定时刷新状态
     const interval = setInterval(() => {
       checkGatewayStatus();
       loadLogs();
@@ -104,7 +93,6 @@ const Dashboard: React.FC = () => {
 
   return (
     <div style={{ padding: '40px', height: '100%', overflow: 'auto' }}>
-      {/* 顶部状态栏 */}
       <div
         style={{
           display: 'flex',
@@ -146,10 +134,9 @@ const Dashboard: React.FC = () => {
               ⏹️ 停止服务
             </Button>
           </Space>
-        </div>
+        </Space>
       </div>
 
-      {/* 状态卡片 */}
       <div
         style={{
           display: 'grid',
@@ -186,7 +173,6 @@ const Dashboard: React.FC = () => {
         </Card>
       </div>
 
-      {/* 日志区域 */}
       <Card title="📋 实时日志" style={{ marginBottom: '24px' }}>
         <div
           style={{
@@ -225,7 +211,6 @@ const Dashboard: React.FC = () => {
         </div>
       </Card>
 
-      {/* 快捷操作 */}
       <Card title="⚡ 快捷操作">
         <Space wrap>
           <Button onClick={() => message.info('检查更新中...')}>
