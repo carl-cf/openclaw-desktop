@@ -31,7 +31,15 @@ const Dashboard: React.FC = () => {
       loadLogs();
     }, 5000);
 
-    return () => clearInterval(interval);
+    // 监听快捷键事件
+    const unsubscribe = () => {
+      // 清理函数，实际实现在 preload 中
+    };
+
+    return () => {
+      clearInterval(interval);
+      unsubscribe();
+    };
   }, []);
 
   const checkGatewayStatus = async () => {

@@ -4,12 +4,16 @@ import { GatewayManager } from './gateway-manager';
 import { ConfigManager } from './config-manager';
 import { Logger } from './logger';
 import { AppUpdater } from './updater';
+import { ShortcutManager } from './shortcut-manager';
+import { NotificationManager } from './notification-manager';
 
 let mainWindow: BrowserWindow | null = null;
 let tray: Tray | null = null;
 let gatewayManager: GatewayManager | null = null;
 let configManager: ConfigManager | null = null;
 let logger: Logger | null = null;
+let shortcutManager: ShortcutManager | null = null;
+let notificationManager: NotificationManager | null = null;
 
 // 初始化日志
 function initLogger() {
@@ -156,11 +160,17 @@ function initIPC() {
 app.whenReady().then(() => {
   initLogger();
   configManager = new ConfigManager();
-  gatewayManager = new GatewayManager(configManager, logger);
+  notificationManager = new NotificationManager(logger);
+  gatewayManager = new GatewayManager(configManager, logger, notificationManager);
   
   createWindow();
   createTray();
   initIPC();
+
+  // 初始化快捷键
+  if (mainWindow) {
+    shortcutManager = new ShortcutManager(mainWindow, logger);
+  }
 
   // 初始化自动更新
   const updater = new AppUpdater();
@@ -185,6 +195,7 @@ app.on('activate', () => {
 // 退出前清理
 app.on('will-quit', async (event) => {
   event.preventDefault();
+  shortcutManager?.unregisterAll();
   await gatewayManager?.stop();
   logger?.info('OpenClaw Desktop 已退出');
   app.exit(0);

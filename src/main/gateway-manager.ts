@@ -1,6 +1,7 @@
 import { spawn, ChildProcess, exec } from 'child_process';
 import { ConfigManager } from './config-manager';
 import { Logger } from './logger';
+import { NotificationManager } from './notification-manager';
 
 export class GatewayManager {
   private process: ChildProcess | null = null;
@@ -8,10 +9,16 @@ export class GatewayManager {
   private status: 'stopped' | 'starting' | 'running' | 'error' = 'stopped';
   private configManager: ConfigManager;
   private logger: Logger | null;
+  private notificationManager: NotificationManager | null = null;
 
-  constructor(configManager: ConfigManager, logger: Logger | null = null) {
+  constructor(
+    configManager: ConfigManager,
+    logger: Logger | null = null,
+    notificationManager: NotificationManager | null = null,
+  ) {
     this.configManager = configManager;
     this.logger = logger;
+    this.notificationManager = notificationManager;
   }
 
   async start(): Promise<void> {
@@ -60,9 +67,13 @@ export class GatewayManager {
       await this.waitForStart();
       this.status = 'running';
       this.logger?.info('OpenClaw 网关启动成功');
+      
+      // 发送通知
+      this.notificationManager?.showServiceStarted();
     } catch (error) {
       this.status = 'error';
       this.logger?.error(`网关启动失败：${error}`);
+      this.notificationManager?.showError('网关启动失败', String(error));
       throw error;
     }
   }
@@ -80,8 +91,12 @@ export class GatewayManager {
       this.process = null;
       this.status = 'stopped';
       this.logger?.info('OpenClaw 网关已停止');
+      
+      // 发送通知
+      this.notificationManager?.showServiceStopped();
     } catch (error) {
       this.logger?.error(`网关停止失败：${error}`);
+      this.notificationManager?.showError('网关停止失败', String(error));
       throw error;
     }
   }
